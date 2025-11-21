@@ -11,7 +11,12 @@ def import_query(path):
 
     with open(path) as file:
         return file.read()
-    
+
+def criar_tabela_spark(df: DataFrame) ->DataFrame:
+    df = spark.createDataFrame(df)
+    return df  
+
+
 def carregar_tabela_spark(format: str, 
                           path: str,
                          sep: str = ',',
