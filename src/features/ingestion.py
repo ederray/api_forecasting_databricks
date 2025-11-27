@@ -10,6 +10,32 @@ from src.features.data import criar_tabela_spark
 spark = SparkSession.builder.appName("API_Forecasting_Ingestion").getOrCreate()
 
 
+def cotacao_atual_etanol_html(url:str) -> DataFrame:
+
+    headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36',
+            'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+            'Referer': 'https://www.google.com/'
+        }
+
+            
+    response = requests.get(url, headers=headers)
+
+    cotacao= pd.read_html(StringIO(response.text), 
+                                attrs={'class': 'cot-fisicas'}, 
+                                decimal=',', 
+                                thousands='.')
+
+    # copia e selecao do valor atual
+    cotacao_atual = cotacao[0].copy()
+    
+    cotacao_atual.loc[0,'Data']= cotacao_atual.loc[0,'Data'].split(' - ')[-1].strip()
+
+    cotacao_atual['Data'] = pd.to_datetime(cotacao_atual['Data'], format='%d/%m/%Y')
+
+    return cotacao_atual
+
+
 def cotacao_dolar_ptax(API_BC_URL:str,
                        DATA_INICIAL:str,
                        DATA_FINAL:str ) -> DataFrame:
@@ -36,32 +62,7 @@ def cotacao_dolar_ptax(API_BC_URL:str,
     
     return df
 
-
-def cotacao_atual_etanol_html(url:str) -> DataFrame:
-
-    headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36',
-            'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
-            'Referer': 'https://www.google.com/'
-        }
-
-            
-    response = requests.get(url, headers=headers)
-
-    cotacao= pd.read_html(StringIO(response.text), 
-                                attrs={'class': 'cot-fisicas'}, 
-                                decimal=',', 
-                                thousands='.')
-
-    # copia e selecao do valor atual
-    cotacao_atual = cotacao[0].copy()
     
-    cotacao_atual.loc[0,'Data']= cotacao_atual.loc[0,'Data'].split(' - ')[-1].strip()
-
-    cotacao_atual['Data'] = pd.to_datetime(cotacao_atual['Data'], format='%d/%m/%Y')
-
-    return cotacao_atual
-
 def cotacao_gasolina_site_petrobras(URL):
 
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}

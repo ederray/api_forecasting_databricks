@@ -10,8 +10,12 @@ def import_query(path):
         return file.read()
 
 
-def criar_tabela_spark(df: DataFrame) ->DataFrame:
-    df = spark.createDataFrame(df)
+def criar_tabela_spark(df: DataFrame, colunas:list=None) ->DataFrame:
+    if not colunas:
+        df = spark.createDataFrame(df)
+    else:
+        df = spark.createDataFrame(df, colunas)
+    
     return df  
 
 
@@ -37,7 +41,12 @@ def carregar_tabela_spark(format: str,
     return df
 
 
-def salvar_tabela_delta_spark(df, path: str, partitionby:list, mode:str="overwrite", merge_schema:bool=False):
+def salvar_tabela_delta_spark(df, 
+                              path: str, 
+                              partitionby:list, 
+                              mode:str="overwrite", 
+                              merge_schema:bool=False):
+    
     df = df.write \
     .format("delta") \
     .mode(mode) 
