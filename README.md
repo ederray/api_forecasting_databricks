@@ -74,13 +74,13 @@ api-forecasting/
 │ ├── bronze/
 │ ├── silver/
 │ └── gold/
-├── sql/ # Queries SQL auxiliares
-└── src/ # Lógica de negócio
-└── features/
-  ├── init.py
-  ├── data_utils.py # I/O e persistência Delta Lake
-  ├── ingestion_utils.py # Ingestão via APIs / scraping
-  └── processing.py # Transformações (lags, spread, imputação)
+├── sql/ # Queries SQL 
+└── src/ # Código fonte do projeto
+  └── features/
+    ├── init.py
+    ├── data.py # I/O e persistência Delta Lake
+    ├── ingestion.py # Ingestão via APIs / scraping
+    └── processing.py # Transformações de dados
 
 ```
 ## 6. Status Atual do Projeto (Camada Silver)
